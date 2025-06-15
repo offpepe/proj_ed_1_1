@@ -16,6 +16,22 @@ typedef struct _reg
     char nome[100];
 } treg;
 
+typedef struct _node
+{
+    void *key;
+    struct _node *esq;
+    struct _node *dir;
+} tnode;
+
+typedef struct _arv
+{
+    tnode *raiz;
+    int (*cmp)(void *, void *, int);
+    double (*dist)(void *, void *);
+    int k;
+    Heap *distHeap;
+} tarv;
+
 void *aloca_reg(float *embed, char nome[])
 {
     treg *reg = malloc(sizeof(treg));
@@ -45,25 +61,6 @@ double distancia(void *a, void *b)
     }
     return sqrt(sum);
 }
-
-/*Definições desenvolvedor da biblioteca*/
-typedef struct _node
-{
-    void *key;
-    struct _node *esq;
-    struct _node *dir;
-} tnode;
-
-typedef struct _arv
-{
-    tnode *raiz;
-    int (*cmp)(void *, void *, int);
-    double (*dist)(void *, void *);
-    int k;
-    Heap *distHeap;
-} tarv;
-
-/*funções desenvolvedor da biblioteca*/
 
 void kdtree_constroi(tarv *arv, int (*cmp)(void *a, void *b, int), double (*dist)(void *, void *), int k)
 {
@@ -112,7 +109,7 @@ void _kdtree_insere(tnode **node, void *key, int (*cmp)(void *a, void *b, int), 
     int pos = profund % k;
     if (cmp((*(*node)).key, key, pos) < 0)
     {
-        _kdtree_insere(&((*(*node)).dir), key, cmp, profund + 1, k);
+        _kdtree_insere(&((*node)->dir), key, cmp, profund + 1, k);
     }
     else
     {
