@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 
 DATASET_PATH = './dataset'
-
+MAX_CONCURRENCY_LEVEL = 8
 app = FastAPI()
 
 
@@ -67,14 +67,13 @@ def process_file(directorie, file):
 
 def load_dataset():
     inserted_embbeds = []
-    
     tasks = []
     for directorie in os.listdir(DATASET_PATH):
         files = os.listdir(os.path.join(DATASET_PATH, directorie))
         for file in files:
             tasks.append((directorie, file))
     
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=MAX_CONCURRENCY_LEVEL) as executor:
         future_to_task = {executor.submit(process_file, directorie, file): (directorie, file) 
                          for directorie, file in tasks}
         
@@ -102,7 +101,6 @@ async def inserir(nome: str = Form(...), file: UploadFile = UploadFile(...)):
     if (not file.size):
         raise HTTPException(status_code=400, detail="É necessário incluir um arquivo")
     fileBytes = await file.read()
-    print(len(fileBytes))
     embbeds = []
     try:
         embbeds = get_face_embbed(BytesIO(fileBytes), nome)
