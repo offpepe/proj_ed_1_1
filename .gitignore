@@ -1,2 +1,7 @@
 *.out
 *.gch
+*.o
+*.so
+dataset/
+__pycache__/
+logs/
